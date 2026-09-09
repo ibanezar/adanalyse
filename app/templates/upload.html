@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Winning Ads Analyzer</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; color: #222; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    button { margin-top: 20px; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+    #result { margin-top: 20px; padding: 12px; background: #f5f5f5; white-space: pre-wrap; font-family: monospace; }
+    .hint { color: #666; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <h1>Upload an ad creative</h1>
+  <form id="upload-form">
+    <label>File (image or video)
+      <input type="file" name="file" required />
+    </label>
+    <label>Product
+      <input type="text" name="product" placeholder="RHINOFIX" required />
+    </label>
+    <label>Market
+      <input type="text" name="market" placeholder="IT" />
+    </label>
+    <label>Outcome
+      <select name="outcome" required>
+        <option value="winner">winner</option>
+        <option value="mid">mid</option>
+        <option value="loser">loser</option>
+      </select>
+    </label>
+    <label>Metric note <span class="hint">(optional — CTR, CPA, spend, etc.)</span>
+      <input type="text" name="metric_note" />
+    </label>
+    <button type="submit">Upload</button>
+  </form>
+  <div id="result"></div>
+
+  <p class="hint">
+    After uploading, POST to <code>/ads/{id}/analyze</code> to extract creative DNA,
+    then view <code>/report/{product}</code> for the pattern report.
+  </p>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const result = document.getElementById('result');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      result.textContent = 'Uploading...';
+      try {
+        const res = await fetch('/ads', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) {
+          result.textContent = 'Error: ' + JSON.stringify(data);
+          return;
+        }
+        result.textContent = 'Uploaded ad #' + data.id + '. Analyze it with:\nPOST /ads/' + data.id + '/analyze';
+      } catch (err) {
+        result.textContent = 'Error: ' + err;
+      }
+    });
+  </script>
+</body>
+</html>

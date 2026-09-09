@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ product }} — Winning Ads Report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 40px auto; color: #222; }
+    h1 { margin-bottom: 4px; }
+    .subtitle { color: #666; margin-top: 0; }
+    .pattern-box { background: #eef6ee; border: 1px solid #bfe3bf; border-radius: 8px; padding: 16px; margin: 20px 0; }
+    .pattern-box h2 { margin-top: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 12px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+    .card .filename { font-weight: 600; word-break: break-all; }
+    .tag { display: inline-block; background: #eee; border-radius: 4px; padding: 2px 6px; font-size: 0.8em; margin: 2px 4px 0 0; }
+    .section-title { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 16px; }
+    .empty { color: #888; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>{{ product }}{% if market %} — {{ market }}{% endif %}</h1>
+  <p class="subtitle">Winning Ads Report</p>
+
+  <div class="pattern-box">
+    <h2>Winning pattern</h2>
+    {% if pattern_data %}
+      <p>{{ pattern_data.pattern_summary }}</p>
+      <p class="hint">Pattern #{{ pattern.id }} — supported by ad(s): {{ pattern_data.supporting_ad_ids }}</p>
+    {% else %}
+      <p class="empty">No winning ads with extracted features yet for this product/market.</p>
+    {% endif %}
+  </div>
+
+  <h2 class="section-title">Winners ({{ winners|length }})</h2>
+  {% if winners %}
+  <div class="grid">
+    {% for row in winners %}
+    <div class="card">
+      <div class="filename">#{{ row.ad.id }} {{ row.ad.filename }}</div>
+      {% if row.ad.metric_note %}<div class="hint">{{ row.ad.metric_note }}</div>{% endif %}
+      {% if row.feature %}
+        <div><span class="tag">{{ row.feature.hook_type }}</span>
+        <span class="tag">{{ row.feature.visual_style }}</span>
+        <span class="tag">{{ row.feature.copy_structure }}</span>
+        <span class="tag">{{ row.feature.cta_style }}</span></div>
+      {% else %}
+        <div class="empty">Not analyzed yet</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No winning ads uploaded.</p>
+  {% endif %}
+
+  <h2 class="section-title">Mid performers ({{ mids|length }})</h2>
+  {% if mids %}
+  <div class="grid">
+    {% for row in mids %}
+    <div class="card">
+      <div class="filename">#{{ row.ad.id }} {{ row.ad.filename }}</div>
+      {% if row.feature %}
+        <div><span class="tag">{{ row.feature.hook_type }}</span>
+        <span class="tag">{{ row.feature.visual_style }}</span>
+        <span class="tag">{{ row.feature.copy_structure }}</span>
+        <span class="tag">{{ row.feature.cta_style }}</span></div>
+      {% else %}
+        <div class="empty">Not analyzed yet</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">None.</p>
+  {% endif %}
+
+  <h2 class="section-title">Losers ({{ losers|length }})</h2>
+  {% if losers %}
+  <div class="grid">
+    {% for row in losers %}
+    <div class="card">
+      <div class="filename">#{{ row.ad.id }} {{ row.ad.filename }}</div>
+      {% if row.feature %}
+        <div><span class="tag">{{ row.feature.hook_type }}</span>
+        <span class="tag">{{ row.feature.visual_style }}</span>
+        <span class="tag">{{ row.feature.copy_structure }}</span>
+        <span class="tag">{{ row.feature.cta_style }}</span></div>
+      {% else %}
+        <div class="empty">Not analyzed yet</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">None.</p>
+  {% endif %}
+</body>
+</html>
