@@ -28,6 +28,27 @@ Video analysis requires `ffmpeg`/`ffprobe` on PATH.
 
 Open http://localhost:8000 for a minimal upload form.
 
+## Deploy to Render
+
+This repo includes a `Dockerfile` (bundles `ffmpeg`) and a `render.yaml`
+Blueprint.
+
+1. Push this repo to GitHub (already done if you're reading this on GitHub).
+2. In the Render dashboard: **New > Blueprint**, pick this repo/branch.
+   Render reads `render.yaml` and provisions a Docker web service named
+   `adanalyse` with a persistent disk mounted at `/app/storage` (so uploaded
+   files and the SQLite DB survive restarts).
+3. When prompted, set the `ANTHROPIC_API_KEY` env var (marked `sync: false`
+   in the blueprint, so Render asks for it rather than storing it in git).
+4. Deploy. Render builds the Dockerfile and starts
+   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+5. Once live, your app is reachable at the `.onrender.com` URL Render
+   assigns to the service (shown on the service's dashboard page).
+
+Alternatively, without the Blueprint: create a new **Web Service** manually,
+point it at this repo, choose **Docker** as the runtime, and set the
+`ANTHROPIC_API_KEY` env var yourself.
+
 ## API
 
 - `POST /ads` — multipart form: `file`, `product`, `market`, `outcome`
